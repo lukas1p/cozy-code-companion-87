@@ -9,8 +9,44 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ProdejciRouteImport } from './routes/prodejci'
+import { Route as ProcBmbRouteImport } from './routes/proc-bmb'
+import { Route as PosteleRouteImport } from './routes/postele'
+import { Route as ONasRouteImport } from './routes/o-nas'
+import { Route as KontaktRouteImport } from './routes/kontakt'
+import { Route as KonfiguratorRouteImport } from './routes/konfigurator'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ProdejciRoute = ProdejciRouteImport.update({
+  id: '/prodejci',
+  path: '/prodejci',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProcBmbRoute = ProcBmbRouteImport.update({
+  id: '/proc-bmb',
+  path: '/proc-bmb',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PosteleRoute = PosteleRouteImport.update({
+  id: '/postele',
+  path: '/postele',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ONasRoute = ONasRouteImport.update({
+  id: '/o-nas',
+  path: '/o-nas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KontaktRoute = KontaktRouteImport.update({
+  id: '/kontakt',
+  path: '/kontakt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KonfiguratorRoute = KonfiguratorRouteImport.update({
+  id: '/konfigurator',
+  path: '/konfigurator',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +55,116 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/konfigurator': typeof KonfiguratorRoute
+  '/kontakt': typeof KontaktRoute
+  '/o-nas': typeof ONasRoute
+  '/postele': typeof PosteleRoute
+  '/proc-bmb': typeof ProcBmbRoute
+  '/prodejci': typeof ProdejciRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/konfigurator': typeof KonfiguratorRoute
+  '/kontakt': typeof KontaktRoute
+  '/o-nas': typeof ONasRoute
+  '/postele': typeof PosteleRoute
+  '/proc-bmb': typeof ProcBmbRoute
+  '/prodejci': typeof ProdejciRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/konfigurator': typeof KonfiguratorRoute
+  '/kontakt': typeof KontaktRoute
+  '/o-nas': typeof ONasRoute
+  '/postele': typeof PosteleRoute
+  '/proc-bmb': typeof ProcBmbRoute
+  '/prodejci': typeof ProdejciRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/konfigurator'
+    | '/kontakt'
+    | '/o-nas'
+    | '/postele'
+    | '/proc-bmb'
+    | '/prodejci'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/konfigurator'
+    | '/kontakt'
+    | '/o-nas'
+    | '/postele'
+    | '/proc-bmb'
+    | '/prodejci'
+  id:
+    | '__root__'
+    | '/'
+    | '/konfigurator'
+    | '/kontakt'
+    | '/o-nas'
+    | '/postele'
+    | '/proc-bmb'
+    | '/prodejci'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  KonfiguratorRoute: typeof KonfiguratorRoute
+  KontaktRoute: typeof KontaktRoute
+  ONasRoute: typeof ONasRoute
+  PosteleRoute: typeof PosteleRoute
+  ProcBmbRoute: typeof ProcBmbRoute
+  ProdejciRoute: typeof ProdejciRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/prodejci': {
+      id: '/prodejci'
+      path: '/prodejci'
+      fullPath: '/prodejci'
+      preLoaderRoute: typeof ProdejciRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/proc-bmb': {
+      id: '/proc-bmb'
+      path: '/proc-bmb'
+      fullPath: '/proc-bmb'
+      preLoaderRoute: typeof ProcBmbRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/postele': {
+      id: '/postele'
+      path: '/postele'
+      fullPath: '/postele'
+      preLoaderRoute: typeof PosteleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/o-nas': {
+      id: '/o-nas'
+      path: '/o-nas'
+      fullPath: '/o-nas'
+      preLoaderRoute: typeof ONasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kontakt': {
+      id: '/kontakt'
+      path: '/kontakt'
+      fullPath: '/kontakt'
+      preLoaderRoute: typeof KontaktRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/konfigurator': {
+      id: '/konfigurator'
+      path: '/konfigurator'
+      fullPath: '/konfigurator'
+      preLoaderRoute: typeof KonfiguratorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,17 +177,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  KonfiguratorRoute: KonfiguratorRoute,
+  KontaktRoute: KontaktRoute,
+  ONasRoute: ONasRoute,
+  PosteleRoute: PosteleRoute,
+  ProcBmbRoute: ProcBmbRoute,
+  ProdejciRoute: ProdejciRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
