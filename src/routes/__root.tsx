@@ -83,9 +83,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "Poctivá česká výroba postelí z masivního buku a dubu. Doživotní záruka na masiv, více než 400 prodejců po celé ČR." },
       { name: "author", content: "BMB" },
       { property: "og:title", content: "BMB — Postele, které vydrží celý život" },
-      { property: "og:description", content: "Poctivá česká výroba postelí z masivního buku a dubu. Doživotní záruka na masiv." },
+      { property: "og:description", content: "Poctivá česká výroba postelí z masivního buku a dubu. Doživotní záruka na masiv, více než 400 prodejců po celé ČR." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "BMB — Postele, které vydrží celý život" },
+      { name: "twitter:description", content: "Poctivá česká výroba postelí z masivního buku a dubu. Doživotní záruka na masiv, více než 400 prodejců po celé ČR." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4b3d4d89-13a2-4159-9a3a-503919c740db/id-preview-1b26f1d2--67879254-b65d-4bee-a1e2-02e938da6af9.lovable.app-1784659517006.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4b3d4d89-13a2-4159-9a3a-503919c740db/id-preview-1b26f1d2--67879254-b65d-4bee-a1e2-02e938da6af9.lovable.app-1784659517006.png" },
     ],
     links: [
       {

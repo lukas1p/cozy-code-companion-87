@@ -24,7 +24,7 @@ export const Route = createFileRoute("/")({
       { title: "BMB — Postele, které vydrží celý život" },
       { name: "description", content: "Poctivá česká výroba postelí z masivního buku a dubu. Doživotní záruka na masiv, více než 400 prodejců po celé ČR." },
       { property: "og:title", content: "BMB — Postele, které vydrží celý život" },
-      { property: "og:description", content: "Poctivá česká výroba postelí z masivního buku a dubu." },
+      { property: "og:description", content: "Poctivá česká výroba postelí z masivního buku a dubu. Doživotní záruka na masiv, více než 400 prodejců po celé ČR." },
     ],
   }),
   component: Home,
