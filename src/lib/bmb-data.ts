@@ -116,13 +116,20 @@ export function formatPrice(price: number): string {
   }).format(price);
 }
 
+// Ukázka reálných partnerských prodejen z bmb.cz/prodejny — jeden zástupce
+// vybraného kraje. Kompletní síť čítá téměř 400 prodejců po ČR a SR.
 export const DEALERS = [
-  { city: "Praha", name: "BMB Studio Praha", phone: "+420 222 111 000", email: "praha@bmb.cz", address: "Vinohradská 25, Praha 2" },
-  { city: "Brno", name: "Nábytek Krátký", phone: "+420 545 220 110", email: "brno@bmb.cz", address: "Veveří 12, Brno" },
-  { city: "Ostrava", name: "Domov Studio", phone: "+420 596 110 220", email: "ostrava@bmb.cz", address: "Nádražní 88, Ostrava" },
-  { city: "Plzeň", name: "BMB Showroom Plzeň", phone: "+420 377 220 330", email: "plzen@bmb.cz", address: "Klatovská 44, Plzeň" },
-  { city: "Olomouc", name: "Interiéry Novák", phone: "+420 585 111 440", email: "olomouc@bmb.cz", address: "Horní náměstí 9, Olomouc" },
-  { city: "Hradec Králové", name: "Studio Bydlení", phone: "+420 495 220 550", email: "hradec@bmb.cz", address: "Gočárova 11, Hradec Králové" },
-  { city: "České Budějovice", name: "BMB Partner ČB", phone: "+420 386 110 660", email: "cb@bmb.cz", address: "Lannova 15, Č. Budějovice" },
-  { city: "Liberec", name: "Nábytek Sever", phone: "+420 485 220 770", email: "liberec@bmb.cz", address: "Pražská 78, Liberec" },
+  { city: "Praha", name: "JMP – Studio zdravého spaní", phone: "+420 251 510 480", email: "jmp@jmp.cz", address: "Radlická 10, 150 00 Praha 5" },
+  { city: "Brno", name: "JMP – Studio zdravého spaní", phone: "+420 541 216 395", email: "brno@jmp.cz", address: "Masná 1, 602 00 Brno" },
+  { city: "Ostrava", name: "Intena nábytek", phone: "+420 596 729 734", email: "obchod@intena.cz", address: "Grmelova 8, 709 00 Ostrava – Mariánské Hory" },
+  { city: "Plzeň", name: "NO+BL Plzeň CZ", phone: "+420 377 221 135", email: "nobl.plzen@nobl-plzen.cz", address: "Přemyslova 1, 301 00 Plzeň" },
+  { city: "Olomouc", name: "Nábytek Valášek – OC Haná", phone: "+420 585 221 740", email: "nabytek.valasek@tiscali.cz", address: "Kafkova 19, 779 00 Olomouc" },
+  { city: "Hradec Králové", name: "Hany nábytek matrace", phone: "+420 603 466 367", email: "hany@hany.cz", address: "OD DON, Gočárova 1517/26, 500 02 Hradec Králové" },
+  { city: "České Budějovice", name: "Postele pro zdravý spánek", phone: "+420 387 314 531", email: "prodejna@postelematrace.cz", address: "Rudolfská 1, 370 01 České Budějovice" },
+  { city: "Liberec", name: "LH Zdravé spaní", phone: "+420 485 100 919", email: "info@lhzdravespani.cz", address: "Vrchlického 830/41, 460 14 Liberec – Ruprechtice" },
+  { city: "Karlovy Vary", name: "NAPOBYT", phone: "+420 353 226 815", email: "nabytek@napobyt.cz", address: "Lidická 581/61, 360 20 Karlovy Vary" },
+  { city: "Pardubice", name: "semQelb – centrum nábytku", phone: "+420 466 510 310", email: "nabytek1@semqelb.cz", address: "Smetanovo náměstí 48, 530 02 Pardubice" },
+  { city: "Teplice", name: "LeRoy – Zdravotní spánkové studio", phone: "+420 775 100 663", email: "teplice@leroy.cz", address: "Masarykova tř. 1047/92, 415 01 Teplice" },
+  { city: "Kolín", name: "Studio SEN", phone: "+420 321 714 345", email: "obchod@studiosen.cz", address: "Obecní dvůr 78, 280 02 Kolín" },
+  { city: "Havlíčkův Brod", name: "Nábytek Petr Jelen", phone: "+420 569 424 427", email: "alej@nabytekjelen.cz", address: "OD Alej, Havlíčkova 3305, 580 01 Havlíčkův Brod" },
 ];

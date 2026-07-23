@@ -23,14 +23,20 @@ const POSITIONS: Record<string, { x: number; y: number }> = {
   Ostrava: { x: 78, y: 30 },
   Plzeň: { x: 18, y: 32 },
   Olomouc: { x: 68, y: 34 },
-  "Hradec Králové": { x: 50, y: 25 },
+  "Hradec Králové": { x: 55, y: 25 },
   "České Budějovice": { x: 30, y: 48 },
   Liberec: { x: 40, y: 14 },
+  "Karlovy Vary": { x: 12, y: 24 },
+  Pardubice: { x: 50, y: 30 },
+  Teplice: { x: 22, y: 18 },
+  Kolín: { x: 44, y: 28 },
+  "Havlíčkův Brod": { x: 48, y: 36 },
 };
 
 function Prodejci() {
   const [q, setQ] = useState("");
   const [active, setActive] = useState<string | null>("Praha");
+  const [sent, setSent] = useState(false);
 
   const filtered = useMemo(
     () =>
@@ -140,8 +146,12 @@ function Prodejci() {
                   <Mail className="h-4 w-4 text-accent" /> {selected.email}
                 </a>
               </div>
-              <button className="group mt-8 inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-xs font-medium text-background transition-colors hover:bg-accent hover:text-accent-foreground">
-                Odeslat konfiguraci tomuto prodejci
+              <button
+                type="button"
+                onClick={() => setSent(true)}
+                className="group mt-8 inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-xs font-medium text-background transition-colors hover:bg-accent hover:text-accent-foreground"
+              >
+                {sent ? "Odesláno — prodejce se ozve" : "Odeslat konfiguraci tomuto prodejci"}
                 <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </button>
             </div>

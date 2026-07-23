@@ -35,14 +35,19 @@ function Kontakt() {
               <div className="text-display mt-3 text-2xl">BMB, spol. s r. o.</div>
               <div className="mt-2 flex items-start gap-3 text-sm text-muted-foreground">
                 <MapPin className="mt-0.5 h-4 w-4 text-accent" />
-                <div>Průmyslová 998<br /> 768 61 Bystřice pod Hostýnem</div>
+                <div>Nádražní 524<br /> 696 32 Ždánice</div>
+              </div>
+              <div className="mt-4 text-xs text-muted-foreground">
+                IČ: 46905235 · DIČ: CZ46905235
               </div>
             </div>
             <div className="rounded-[2rem] border border-border bg-card p-8">
               <div className="text-eyebrow text-muted-foreground">Kontakt</div>
               <div className="mt-4 space-y-3 text-sm">
-                <a href="tel:+420573380011" className="flex items-center gap-3"><Phone className="h-4 w-4 text-accent" />+420 573 380 011</a>
-                <a href="mailto:obchod@bmb.cz" className="flex items-center gap-3"><Mail className="h-4 w-4 text-accent" />obchod@bmb.cz</a>
+                <a href="tel:+420774801573" className="flex items-center gap-3"><Phone className="h-4 w-4 text-accent" />+420 774 801 573 <span className="text-muted-foreground">· hotline</span></a>
+                <a href="tel:+420518633117" className="flex items-center gap-3"><Phone className="h-4 w-4 text-accent" />+420 518 633 117 <span className="text-muted-foreground">· recepce</span></a>
+                <a href="mailto:bmb@bmb.cz" className="flex items-center gap-3"><Mail className="h-4 w-4 text-accent" />bmb@bmb.cz</a>
+                <a href="mailto:objednavky@bmb.cz" className="flex items-center gap-3"><Mail className="h-4 w-4 text-accent" />objednavky@bmb.cz</a>
               </div>
             </div>
             <div className="rounded-[2rem] border border-border bg-oak-soft/50 p-8">

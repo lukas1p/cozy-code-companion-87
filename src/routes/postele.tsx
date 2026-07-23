@@ -25,7 +25,7 @@ function PostelePage() {
             Postele z masivu, dělané, aby zůstaly.
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-            Každý model vyrábíme v Bystřici pod Hostýnem. Rozměr, materiál i
+            Každý model vyrábíme ve Ždánicích na jižní Moravě. Rozměr, materiál i
             povrch si můžete přizpůsobit v konfigurátoru.
           </p>
         </Reveal>
