@@ -23,9 +23,14 @@ const POSITIONS: Record<string, { x: number; y: number }> = {
   Ostrava: { x: 78, y: 30 },
   Plzeň: { x: 18, y: 32 },
   Olomouc: { x: 68, y: 34 },
-  "Hradec Králové": { x: 50, y: 25 },
+  "Hradec Králové": { x: 55, y: 25 },
   "České Budějovice": { x: 30, y: 48 },
   Liberec: { x: 40, y: 14 },
+  "Karlovy Vary": { x: 12, y: 24 },
+  Pardubice: { x: 50, y: 30 },
+  Teplice: { x: 22, y: 18 },
+  Kolín: { x: 44, y: 28 },
+  "Havlíčkův Brod": { x: 48, y: 36 },
 };
 
 function Prodejci() {
