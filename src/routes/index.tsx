@@ -66,7 +66,7 @@ function Home() {
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-foreground/75">
               Poctivá česká výroba z masivního buku a dubu. Každý kus je
-              ručně dokončen v naší továrně v Bystřici pod Hostýnem —
+              ručně dokončen v naší továrně ve Ždánicích na Moravě —
               s doživotní zárukou.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-3">
