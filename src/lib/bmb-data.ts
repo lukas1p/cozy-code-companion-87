@@ -116,7 +116,6 @@ export function formatPrice(price: number): string {
   }).format(price);
 }
 
-export const DEALERS = [
 // Ukázka reálných partnerských prodejen z bmb.cz/prodejny — jeden zástupce
 // vybraného kraje. Kompletní síť čítá téměř 400 prodejců po ČR a SR.
 export const DEALERS = [
