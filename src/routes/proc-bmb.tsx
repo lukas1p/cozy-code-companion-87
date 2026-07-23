@@ -18,7 +18,7 @@ export const Route = createFileRoute("/proc-bmb")({
 });
 
 const PILLARS = [
-  { icon: Factory, title: "Vlastní továrna", text: "Vše, od řeziva po finální olej, probíhá pod jednou střechou v Bystřici pod Hostýnem." },
+  { icon: Factory, title: "Vlastní továrna", text: "Vše, od řeziva po finální olej, probíhá pod jednou střechou ve Ždánicích na jižní Moravě." },
   { icon: Hammer, title: "Poctivé řemeslo", text: "Spoje sesazujeme ručně a každý kus prochází kontrolou zkušených truhlářů." },
   { icon: Cpu, title: "Moderní technologie", text: "CNC obrábění, přesné brusky a klimatizovaná sušárna zajišťují stabilitu na desetiletí." },
   { icon: TreePine, title: "České dřevo", text: "Buk a dub z prověřených českých pil s certifikátem PEFC." },
