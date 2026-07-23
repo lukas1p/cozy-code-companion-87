@@ -82,6 +82,7 @@ function Konfigurator() {
     ...DEFAULT_CONFIG,
     bedId: initialBed ?? DEFAULT_CONFIG.bedId,
   });
+  const [sent, setSent] = useState(false);
 
   const bed = BEDS[config.bedId];
   const price = useMemo(() => computePrice(config), [config]);
@@ -249,8 +250,12 @@ function Konfigurator() {
                       <span className="inline-flex items-center gap-2"><MapPin className="h-3.5 w-3.5" />Vybrat nejbližšího prodejce</span>
                       <ArrowUpRight className="h-3.5 w-3.5" />
                     </Link>
-                    <button className="group inline-flex items-center justify-between rounded-full border border-background/20 px-5 py-3 text-xs font-medium text-background transition-colors hover:border-background/60">
-                      <span className="inline-flex items-center gap-2"><Mail className="h-3.5 w-3.5" />Odeslat konfiguraci e-mailem</span>
+                    <button
+                      type="button"
+                      onClick={() => setSent(true)}
+                      className="group inline-flex items-center justify-between rounded-full border border-background/20 px-5 py-3 text-xs font-medium text-background transition-colors hover:border-background/60"
+                    >
+                      <span className="inline-flex items-center gap-2"><Mail className="h-3.5 w-3.5" />{sent ? "Odesláno — brzy se ozveme" : "Odeslat konfiguraci e-mailem"}</span>
                       <ArrowUpRight className="h-3.5 w-3.5" />
                     </button>
                   </div>
