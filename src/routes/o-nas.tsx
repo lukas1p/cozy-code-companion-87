@@ -18,10 +18,10 @@ export const Route = createFileRoute("/o-nas")({
 });
 
 const TIMELINE = [
-  { y: "1992", t: "Založení firmy", d: "V Bystřici pod Hostýnem vzniká malá truhlárna se čtyřmi zaměstnanci." },
-  { y: "2004", t: "Vlastní továrna", d: "Otvíráme moderní výrobní halu s klimatizovanou sušárnou masivu." },
-  { y: "2015", t: "400 prodejců", d: "Rozšíření sítě prodejců po celé České a Slovenské republice." },
-  { y: "2026", t: "Nová kolekce", d: "Uvádíme nadčasovou řadu MARIKA, ALEXIS a ELLA family." },
+  { y: "1992", t: "Založení firmy", d: "Ve Ždánicích na jižní Moravě vzniká rodinná truhlárna zaměřená na masivní postele." },
+  { y: "Postupný růst", t: "Vlastní výrobní areál", d: "Rozšíření o klimatizovanou sušárnu masivu a vlastní CNC obrábění." },
+  { y: "Dnes", t: "Téměř 400 prodejců", d: "Síť partnerských prodejen po celé České republice a na Slovensku." },
+  { y: "Dnes", t: "~50 zaměstnanců", d: "Rodinný tým truhlářů, technologů a obchodníků pod jednou střechou." },
 ];
 
 function ONas() {
