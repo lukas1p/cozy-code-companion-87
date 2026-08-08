@@ -65,8 +65,8 @@ export type ConfigState = {
 
 export const DEFAULT_CONFIG: ConfigState = {
   bedId: "marika",
-  size: "180x200",
-  material: "dub",
+  size: "160x200",
+  material: "buk",
   surface: "prirodni",
   storage: "ne",
   corners: "rovne",

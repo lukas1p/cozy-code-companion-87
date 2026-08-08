@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import bmbLogo from "@/assets/bmb-logo.png.asset.json";
 
 export function BmbLogo({ className = "" }: { className?: string }) {
   return (
@@ -7,9 +8,11 @@ export function BmbLogo({ className = "" }: { className?: string }) {
       className={`inline-flex items-center gap-2 ${className}`}
       aria-label="BMB — domů"
     >
-      <span className="text-display text-[1.35rem] font-semibold uppercase tracking-[0.32em] leading-none">
-        BMB
-      </span>
+      <img
+        src={bmbLogo.url}
+        alt="BMB — český nábytek, 1897"
+        className="h-9 w-auto"
+      />
     </Link>
   );
 }
