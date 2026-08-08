@@ -121,6 +121,13 @@ function Konfigurator() {
                 <span className="rounded-full bg-background/85 px-3 py-1 text-[10px] font-medium tracking-[0.18em] backdrop-blur">
                   {config.material.toUpperCase()}
                 </span>
+                <span className="rounded-full bg-background/85 px-3 py-1 text-[10px] font-medium tracking-[0.18em] backdrop-blur">
+                  {config.surface.toUpperCase()}
+                </span>
+              </div>
+              <div className="absolute bottom-4 left-6 right-6 text-[10px] leading-relaxed text-foreground/60">
+                Foto je k dispozici pouze pro model — kombinace povrchů a rohů jsou
+                zatím demo/prototypové hodnoty.
               </div>
             </div>
             <div className="grid grid-cols-3 gap-3 p-6">
