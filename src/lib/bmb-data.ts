@@ -25,7 +25,7 @@ export const BEDS: Record<
       "Robustní konstrukce a přímé linie. Nejprodávanější model, který se hodí do každé ložnice.",
     highlights: ["Masivní dub", "Rovné rohy", "Doživotní záruka"],
     image: bedMarika,
-    basePrice: 18990,
+    basePrice: 16169,
     code: "MRK",
   },
   alexis: {
@@ -36,7 +36,7 @@ export const BEDS: Record<
       "Elegantní zaoblené čelo, které do místnosti přináší klid a jemnost.",
     highlights: ["Masivní buk", "Oblé rohy", "Přírodní olej"],
     image: bedAlexis,
-    basePrice: 21490,
+    basePrice: 19286,
     code: "ALX",
   },
   ella: {
@@ -47,7 +47,7 @@ export const BEDS: Record<
       "Nízký profil s úložným prostorem. Dost místa pro celou rodinu i pro sezónní věci.",
     highlights: ["Úložný prostor", "Masiv dub", "Bezpečné hrany"],
     image: bedElla,
-    basePrice: 24990,
+    basePrice: 11125,
     code: "ELL",
   },
 };
