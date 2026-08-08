@@ -20,9 +20,8 @@ export const Route = createFileRoute("/konfigurator")({
       { property: "og:description", content: "Postavte si postel na míru. BMB, česká výroba." },
     ],
   }),
-  validateSearch: (search: Record<string, unknown>) => ({
-    bed: (search.bed as string) ?? undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { bed?: string } =>
+    typeof search.bed === "string" ? { bed: search.bed } : {},
   component: Konfigurator,
 });
 
