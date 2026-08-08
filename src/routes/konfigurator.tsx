@@ -2,43 +2,39 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ArrowUpRight, Check, Mail, MapPin } from "lucide-react";
 import {
-  BEDS,
-  BED_LIST,
-  DEFAULT_CONFIG,
-  computeCode,
-  computePrice,
+  PRODUCTS,
+  PRODUCT_LIST,
   formatPrice,
-  type BedId,
-  type ConfigState,
-} from "@/lib/bmb-data";
+  sanitize,
+  type Opt,
+  type Product,
+  type Selection,
+} from "@/lib/bmb-catalog";
 
 export const Route = createFileRoute("/konfigurator")({
   head: () => ({
     meta: [
       { title: "Konfigurátor postele — BMB" },
-      { name: "description", content: "Nakonfigurujte si postel BMB — rozměr, materiál, povrch a úložný prostor. Cena i kód se mění v reálném čase." },
+      { name: "description", content: "Nakonfigurujte si postel BMB — rozměr, materiál, dekor a provedení. Cena i objednací kód podle oficiálního ceníku BMB." },
       { property: "og:title", content: "Konfigurátor postele — BMB" },
       { property: "og:description", content: "Postavte si postel na míru. BMB, česká výroba." },
     ],
   }),
-  validateSearch: (search: Record<string, unknown>) => ({
-    bed: (search.bed as BedId) ?? undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { bed?: string } =>
+    typeof search.bed === "string" ? { bed: search.bed } : {},
   component: Konfigurator,
 });
 
-type OptionValue = string;
-
-function OptionGroup<T extends OptionValue>({
+function OptionGroup({
   label,
   value,
   onChange,
   options,
 }: {
   label: string;
-  value: T;
-  onChange: (v: T) => void;
-  options: { value: T; label: string; hint?: string }[];
+  value: string;
+  onChange: (v: string) => void;
+  options: Opt[];
 }) {
   return (
     <div>
@@ -52,6 +48,7 @@ function OptionGroup<T extends OptionValue>({
             <button
               key={o.value}
               type="button"
+              aria-pressed={active}
               onClick={() => onChange(o.value)}
               className={`group relative flex flex-col items-start gap-1 rounded-2xl border px-4 py-3.5 text-left text-sm transition-all ${
                 active
@@ -59,15 +56,13 @@ function OptionGroup<T extends OptionValue>({
                   : "border-border bg-background text-foreground hover:border-foreground/40"
               }`}
             >
-              <span className="font-medium">{o.label}</span>
+              <span className="pr-5 font-medium">{o.label}</span>
               {o.hint && (
                 <span className={`text-[11px] ${active ? "text-background/70" : "text-muted-foreground"}`}>
                   {o.hint}
                 </span>
               )}
-              {active && (
-                <Check className="absolute right-3 top-3 h-3.5 w-3.5" />
-              )}
+              {active && <Check className="absolute right-3 top-3 h-3.5 w-3.5" />}
             </button>
           );
         })}
@@ -78,18 +73,28 @@ function OptionGroup<T extends OptionValue>({
 
 function Konfigurator() {
   const { bed: initialBed } = Route.useSearch();
-  const [config, setConfig] = useState<ConfigState>({
-    ...DEFAULT_CONFIG,
-    bedId: initialBed ?? DEFAULT_CONFIG.bedId,
-  });
+  const initialProduct: Product = PRODUCTS[initialBed ?? "marika"] ?? PRODUCTS.marika;
+
+  const [productId, setProductId] = useState<string>(initialProduct.id);
+  const [sel, setSel] = useState<Selection>(() => sanitize(initialProduct, initialProduct.defaults));
   const [sent, setSent] = useState(false);
 
-  const bed = BEDS[config.bedId];
-  const price = useMemo(() => computePrice(config), [config]);
-  const code = useMemo(() => computeCode(config), [config]);
+  const product = PRODUCTS[productId];
+  const result = useMemo(() => product.resolve(sel), [product, sel]);
 
-  const update = <K extends keyof ConfigState>(k: K, v: ConfigState[K]) =>
-    setConfig((c) => ({ ...c, [k]: v }));
+  const update = (id: string, v: string) =>
+    setSel((prev) => sanitize(product, { ...prev, [id]: v }));
+
+  const switchProduct = (id: string) => {
+    const next = PRODUCTS[id];
+    setProductId(id);
+    setSel(sanitize(next, { ...next.defaults, ...sel }));
+  };
+
+  const summary = product.params.map((p) => {
+    const opt = p.options(sel).find((o) => o.value === sel[p.id]);
+    return { label: p.label, value: opt?.label ?? "—" };
+  });
 
   return (
     <div className="pt-8 pb-24">
@@ -100,7 +105,7 @@ function Konfigurator() {
             <h1 className="text-display mt-3 text-3xl sm:text-4xl">Postavte si svou postel</h1>
           </div>
           <div className="text-sm text-muted-foreground">
-            Předvyplněno nejprodávanější variantou · změny se propíší v reálném čase
+            Ceny a objednací kódy dle oficiálního ceníku BMB · platnost od 1. 4. 2026
           </div>
         </div>
 
@@ -109,35 +114,32 @@ function Konfigurator() {
           <div className="sticky top-24 h-fit overflow-hidden rounded-[2rem] border border-border bg-oak-soft/40">
             <div className="relative aspect-[4/3] w-full overflow-hidden bg-oak-soft/60">
               <img
-                key={bed.id}
-                src={bed.image}
-                alt={bed.name}
+                key={product.id}
+                src={product.image}
+                alt={product.name}
                 className="h-full w-full object-cover fade-in-soft"
               />
-              <div className="absolute left-6 top-6 flex gap-2">
-                <span className="rounded-full bg-background/85 px-3 py-1 text-[10px] font-medium tracking-[0.18em] backdrop-blur">
-                  {bed.code}
-                </span>
-                <span className="rounded-full bg-background/85 px-3 py-1 text-[10px] font-medium tracking-[0.18em] backdrop-blur">
-                  {config.material.toUpperCase()}
-                </span>
-                <span className="rounded-full bg-background/85 px-3 py-1 text-[10px] font-medium tracking-[0.18em] backdrop-blur">
-                  {config.surface.toUpperCase()}
-                </span>
+              <div className="absolute left-6 top-6 flex flex-wrap gap-2">
+                {[result.code ?? "—", `${sel.width} × ${sel.length}`, (sel.material ?? "").toUpperCase()].map((t) => (
+                  <span key={t} className="rounded-full bg-background/85 px-3 py-1 text-[10px] font-medium tracking-[0.18em] backdrop-blur">
+                    {t}
+                  </span>
+                ))}
               </div>
               <div className="absolute bottom-4 left-6 right-6 text-[10px] leading-relaxed text-foreground/60">
-                Foto je k dispozici pouze pro model — kombinace povrchů a rohů jsou
-                zatím demo/prototypové hodnoty.
+                Fotografie zobrazuje model, nikoli konkrétní dekor — vzorník dekorů
+                najdete u prodejce nebo na {product.sourceUrl.replace("https://", "")}.
               </div>
             </div>
             <div className="grid grid-cols-3 gap-3 p-6">
-              {BED_LIST.map((b) => {
-                const active = b.id === config.bedId;
+              {PRODUCT_LIST.map((b) => {
+                const active = b.id === productId;
                 return (
                   <button
                     key={b.id}
                     type="button"
-                    onClick={() => update("bedId", b.id)}
+                    aria-pressed={active}
+                    onClick={() => switchProduct(b.id)}
                     className={`group overflow-hidden rounded-2xl border transition-all ${
                       active ? "border-foreground" : "border-border hover:border-foreground/30"
                     }`}
@@ -160,71 +162,33 @@ function Konfigurator() {
             <div className="rounded-[2rem] border border-border bg-card p-8">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <div className="text-eyebrow text-muted-foreground">{bed.tagline}</div>
-                  <h2 className="text-display mt-2 text-4xl">{bed.name}</h2>
+                  <div className="text-eyebrow text-muted-foreground">{product.tagline}</div>
+                  <h2 className="text-display mt-2 text-4xl">{product.name}</h2>
                   <div className="mt-2 text-xs tracking-[0.2em] text-muted-foreground">
-                    KÓD · <span className="text-foreground">{code}</span>
+                    OBJ. Č. · <span className="text-foreground">{result.code ?? "—"}</span>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-eyebrow text-muted-foreground">Orientační cena</div>
+                  <div className="text-eyebrow text-muted-foreground">Cena s DPH</div>
                   <div
-                    key={price}
+                    key={result.price ?? "na"}
                     className="text-display mt-1 text-3xl text-foreground fade-in-soft"
                   >
-                    {formatPrice(price)}
+                    {result.price ? formatPrice(result.price) : "na dotaz"}
                   </div>
                 </div>
               </div>
 
               <div className="mt-8 space-y-6">
-                <OptionGroup
-                  label="Rozměr"
-                  value={config.size}
-                  onChange={(v) => update("size", v)}
-                  options={[
-                    { value: "160x200", label: "160 × 200", hint: "Standard" },
-                    { value: "180x200", label: "180 × 200", hint: "Nejoblíbenější" },
-                  ]}
-                />
-                <OptionGroup
-                  label="Materiál"
-                  value={config.material}
-                  onChange={(v) => update("material", v)}
-                  options={[
-                    { value: "buk", label: "Masiv buk", hint: "Doživotní záruka" },
-                    { value: "dub", label: "Masiv dub", hint: "Doživotní záruka" },
-                    { value: "imitace", label: "Imitace masivu", hint: "10 let záruka" },
-                  ]}
-                />
-                <OptionGroup
-                  label="Povrch"
-                  value={config.surface}
-                  onChange={(v) => update("surface", v)}
-                  options={[
-                    { value: "prirodni", label: "Přírodní" },
-                    { value: "bily", label: "Bílý" },
-                    { value: "grafit", label: "Grafit" },
-                  ]}
-                />
-                <OptionGroup
-                  label="Úložný prostor"
-                  value={config.storage}
-                  onChange={(v) => update("storage", v)}
-                  options={[
-                    { value: "ne", label: "Bez úložného" },
-                    { value: "ano", label: "S úložným", hint: "+ 3 600 Kč" },
-                  ]}
-                />
-                <OptionGroup
-                  label="Rohy"
-                  value={config.corners}
-                  onChange={(v) => update("corners", v)}
-                  options={[
-                    { value: "rovne", label: "Rovné" },
-                    { value: "oble", label: "Oblé" },
-                  ]}
-                />
+                {product.params.map((p) => (
+                  <OptionGroup
+                    key={`${product.id}-${p.id}`}
+                    label={p.label}
+                    value={sel[p.id] ?? ""}
+                    onChange={(v) => update(p.id, v)}
+                    options={p.options(sel)}
+                  />
+                ))}
               </div>
             </div>
 
@@ -233,21 +197,37 @@ function Konfigurator() {
               <div className="text-eyebrow text-accent">Výsledek konfigurace</div>
               <div className="mt-4 grid gap-6 sm:grid-cols-2">
                 <div>
-                  <div className="text-display text-2xl">{bed.name}</div>
+                  <div className="text-display text-2xl">{product.name}</div>
                   <ul className="mt-4 space-y-2 text-xs text-background/70">
-                    <li className="flex justify-between border-b border-background/10 pb-1.5"><span>Rozměr</span><span className="text-background">{config.size.replace("x", " × ")}</span></li>
-                    <li className="flex justify-between border-b border-background/10 pb-1.5"><span>Materiál</span><span className="text-background capitalize">{config.material}</span></li>
-                    <li className="flex justify-between border-b border-background/10 pb-1.5"><span>Povrch</span><span className="text-background capitalize">{config.surface}</span></li>
-                    <li className="flex justify-between border-b border-background/10 pb-1.5"><span>Úložný</span><span className="text-background capitalize">{config.storage}</span></li>
-                    <li className="flex justify-between"><span>Rohy</span><span className="text-background capitalize">{config.corners}</span></li>
+                    {summary.map((s, i) => (
+                      <li
+                        key={s.label}
+                        className={`flex justify-between gap-4 ${i < summary.length - 1 ? "border-b border-background/10 pb-1.5" : ""}`}
+                      >
+                        <span>{s.label}</span>
+                        <span className="text-right text-background">{s.value}</span>
+                      </li>
+                    ))}
                   </ul>
                 </div>
                 <div className="flex flex-col justify-between gap-6">
                   <div>
-                    <div className="text-eyebrow text-background/60">Kód produktu</div>
-                    <div className="mt-1 font-mono text-sm">{code}</div>
-                    <div className="text-eyebrow mt-6 text-background/60">Cena</div>
-                    <div className="text-display mt-1 text-3xl">{formatPrice(price)}</div>
+                    <div className="text-eyebrow text-background/60">Objednací kód</div>
+                    <div className="mt-1 font-mono text-sm">{result.code ?? "—"}</div>
+                    <div className="text-eyebrow mt-6 text-background/60">Rozpis ceny</div>
+                    <ul className="mt-2 space-y-1 text-xs text-background/70">
+                      {result.lines.map((l) => (
+                        <li key={l.label} className="flex justify-between gap-4">
+                          <span>{l.label}</span>
+                          <span className="text-background">
+                            {l.amount != null ? formatPrice(l.amount) : l.note}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="text-display mt-4 text-3xl">
+                      {result.price ? formatPrice(result.price) : "Cena na dotaz"}
+                    </div>
                   </div>
                   <div className="flex flex-col gap-2">
                     <Link
@@ -268,10 +248,12 @@ function Konfigurator() {
                   </div>
                 </div>
               </div>
-              <p className="mt-6 text-[11px] leading-relaxed text-background/50">
-                Konfigurátor slouží jako podklad pro objednávku u prodejce.
-                Přímý nákup online neposkytujeme.
-              </p>
+              <ul className="mt-6 space-y-1 text-[11px] leading-relaxed text-background/50">
+                {result.notes.map((n) => (
+                  <li key={n}>· {n}</li>
+                ))}
+                <li>· Konfigurátor slouží jako podklad pro objednávku u prodejce. Přímý nákup online neposkytujeme.</li>
+              </ul>
             </div>
           </div>
         </div>
