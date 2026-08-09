@@ -204,6 +204,34 @@ const MARIKA_PRICES: Record<string, Record<string, { code: string; price: number
   ),
 };
 
+/**
+ * Zjednodušená DEMO nabídka dekorů pro MARIKA klasik — reprezentativní výběr
+ * ze skutečných dekorů BMB (přesné oficiální názvy), nikoli celý vzorník.
+ */
+const MARIKA_DECORS: Record<string, Decor[]> = {
+  imitace: [
+    { value: slug("Dub Bardolino"), label: "Dub Bardolino", group: "Imitace masivního dřeva" },
+    { value: slug("Bílé"), label: "Bílé", group: "Imitace masivního dřeva" },
+    { value: slug("Kašmírově šedá"), label: "Kašmírově šedá", group: "Imitace masivního dřeva" },
+  ],
+  "buk-cink": [
+    { value: slug("Přírodní"), label: "Přírodní", group: "Přírodní dezény" },
+    { value: slug("Bílá"), label: "Bílá", group: "Barva", pct: 15, pctNote: "Bílá na masiv buk +15 %" },
+    { value: slug("Grafit"), label: "Grafit", group: "Mořeno", pct: 5, pctNote: "Buk moření +5 %" },
+  ],
+  "dub-cink": [
+    { value: slug("Natur olej"), label: "Natur olej", group: "Olej" },
+    { value: slug("Bílý olej"), label: "Bílý olej", group: "Olej", pct: 5, pctNote: "Dub bílý olej +5 %" },
+    { value: slug("Grafit olej"), label: "Grafit olej", group: "Olej" },
+  ],
+};
+
+const MARIKA_DECOR_DEFAULT: Record<string, string> = {
+  imitace: slug("Dub Bardolino"),
+  "buk-cink": slug("Přírodní"),
+  "dub-cink": slug("Natur olej"),
+};
+
 const MARIKA: Product = {
   id: "marika",
   name: "MARIKA klasik",
