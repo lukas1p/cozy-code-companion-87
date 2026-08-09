@@ -120,7 +120,7 @@ function Konfigurator() {
                 className="h-full w-full object-cover fade-in-soft"
               />
               <div className="absolute left-6 top-6 flex flex-wrap gap-2">
-                {[result.code ?? "—", `${sel.width} × ${sel.length}`, (sel.material ?? "").toUpperCase()].map((t) => (
+                {[result.code ?? "—", ...summary.map((s) => s.value)].map((t) => (
                   <span key={t} className="rounded-full bg-background/85 px-3 py-1 text-[10px] font-medium tracking-[0.18em] backdrop-blur">
                     {t}
                   </span>

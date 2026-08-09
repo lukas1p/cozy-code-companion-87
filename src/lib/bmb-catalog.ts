@@ -30,7 +30,8 @@ export type ParamId =
   | "length"
   | "corners"
   | "decor"
-  | "storage";
+  | "storage"
+  | "size";
 
 export type Param = {
   id: ParamId;
@@ -203,6 +204,34 @@ const MARIKA_PRICES: Record<string, Record<string, { code: string; price: number
   ),
 };
 
+/**
+ * Zjednodušená DEMO nabídka dekorů pro MARIKA klasik — reprezentativní výběr
+ * ze skutečných dekorů BMB (přesné oficiální názvy), nikoli celý vzorník.
+ */
+const MARIKA_DECORS: Record<string, Decor[]> = {
+  imitace: [
+    { value: slug("Dub Bardolino"), label: "Dub Bardolino", group: "Imitace masivního dřeva" },
+    { value: slug("Bílé"), label: "Bílé", group: "Imitace masivního dřeva" },
+    { value: slug("Kašmírově šedá"), label: "Kašmírově šedá", group: "Imitace masivního dřeva" },
+  ],
+  "buk-cink": [
+    { value: slug("Přírodní"), label: "Přírodní", group: "Přírodní dezény" },
+    { value: slug("Bílá"), label: "Bílá", group: "Barva", pct: 15, pctNote: "Bílá na masiv buk +15 %" },
+    { value: slug("Grafit"), label: "Grafit", group: "Mořeno", pct: 5, pctNote: "Buk moření +5 %" },
+  ],
+  "dub-cink": [
+    { value: slug("Natur olej"), label: "Natur olej", group: "Olej" },
+    { value: slug("Bílý olej"), label: "Bílý olej", group: "Olej", pct: 5, pctNote: "Dub bílý olej +5 %" },
+    { value: slug("Grafit olej"), label: "Grafit olej", group: "Olej" },
+  ],
+};
+
+const MARIKA_DECOR_DEFAULT: Record<string, string> = {
+  imitace: slug("Dub Bardolino"),
+  "buk-cink": slug("Přírodní"),
+  "dub-cink": slug("Natur olej"),
+};
+
 const MARIKA: Product = {
   id: "marika",
   name: "MARIKA klasik",
@@ -211,21 +240,18 @@ const MARIKA: Product = {
   sourceUrl: "https://bmb.cz/marika-klasik/",
   priceFrom: 16169,
   defaults: {
-    variant: "rost",
+    size: "160",
     material: "imitace",
-    width: "160",
-    length: "200",
     corners: "rovne",
-    decor: slug("Dub Bardolino"),
-    storage: "sololak",
+    decor: MARIKA_DECOR_DEFAULT.imitace,
   },
   params: [
     {
-      id: "variant",
-      label: "Varianta konstrukce",
+      id: "size",
+      label: "Rozměr",
       options: () => [
-        { value: "rost", label: "1. varianta", hint: "Výklopný rošt + pneu. písty v ceně" },
-        { value: "strednice", label: "2. varianta", hint: "Se střednicí, bez roštu a pístů" },
+        { value: "160", label: "160 × 200" },
+        { value: "180", label: "180 × 200" },
       ],
     },
     {
@@ -233,30 +259,9 @@ const MARIKA: Product = {
       label: "Materiál",
       options: () => [
         { value: "imitace", label: "Imitace masivu", hint: "32 mm · záruka 10 let" },
-        { value: "buk-cink", label: "Buk jádrový cink", hint: "40 mm · doživotní záruka" },
-        { value: "dub-cink", label: "Dub cink", hint: "40 mm · doživotní záruka" },
+        { value: "buk-cink", label: "Masivní buk", hint: "40 mm · doživotní záruka" },
+        { value: "dub-cink", label: "Masivní dub", hint: "40 mm · doživotní záruka" },
       ],
-    },
-    {
-      id: "width",
-      label: "Šířka lehací plochy",
-      options: (sel) =>
-        (sel.variant === "rost" ? ["160", "180"] : ["90", "120", "140", "160", "180", "200"]).map((w) => ({
-          value: w,
-          label: `${w} cm`,
-        })),
-    },
-    {
-      id: "length",
-      label: "Délka lehací plochy",
-      options: (sel) =>
-        sel.variant === "rost"
-          ? [{ value: "200", label: "200 cm" }]
-          : [
-              { value: "200", label: "200 cm" },
-              { value: "210", label: "210 cm", hint: "příplatek" },
-              { value: "220", label: "220 cm", hint: "příplatek" },
-            ],
     },
     {
       id: "corners",
@@ -266,23 +271,25 @@ const MARIKA: Product = {
         { value: "oble", label: "Oblé rohy" },
       ],
     },
-    { id: "decor", label: "Dekor", options: decorOptions },
     {
-      id: "storage",
-      label: "Dno úložného prostoru",
-      options: () => [
-        { value: "sololak", label: "Sololak 3 mm", hint: "Standard, v ceně" },
-        { value: "ltd", label: "Pevné LTD 18 mm", hint: "+ 1 929 Kč" },
-      ],
+      id: "decor",
+      label: "Dekor / povrch",
+      options: (sel) =>
+        (MARIKA_DECORS[sel.material ?? "imitace"] ?? MARIKA_DECORS.imitace).map((d) => ({
+          value: d.value,
+          label: d.label,
+          hint: d.pct ? `+${d.pct} %` : undefined,
+        })),
     },
   ],
   resolve: (sel) => {
     const key = `${sel.material}-${sel.corners}`;
-    const col = `${sel.variant}-${sel.width}`;
+    const col = `rost-${sel.size}`;
     const cell = MARIKA_PRICES[key]?.[col];
     const lines: PriceLine[] = [];
     const notes = [
       "Úložný prostor pod postelí je u obou variant v ceně (zdroj: bmb.cz/marika-klasik).",
+      "Zjednodušená demo konfigurace: 1. varianta konstrukce (výklopný rošt), délka 200 cm.",
     ];
     if (!cell) {
       return { lines, notes: [...notes, "Pro tuto kombinaci ceník BMB cenu neuvádí."] };
@@ -290,26 +297,11 @@ const MARIKA: Product = {
     let price = cell.price;
     lines.push({ label: "Základní cena dle ceníku", amount: cell.price });
 
-    if (sel.length !== "200") {
-      const surcharge =
-        sel.length === "210" ? (isMasiv(sel.material) ? 1372 : 646) : isMasiv(sel.material) ? 2752 : 1284;
-      price += surcharge;
-      lines.push({ label: `Prodloužení na ${sel.length} cm`, amount: surcharge });
-    }
-
-    const decor = findDecor(sel.material, sel.decor);
+    const decor = (MARIKA_DECORS[sel.material] ?? []).find((d) => d.value === sel.decor);
     if (decor?.pct) {
       const amount = round((cell.price * decor.pct) / 100);
       price += amount;
       lines.push({ label: decor.pctNote ?? `Dekor +${decor.pct} %`, amount });
-    }
-    if (sel.material === "imitace") {
-      notes.push("Prémiové dekory imitace mají příplatek +10 %; BMB veřejně neuvádí, které dekory do skupiny patří.");
-    }
-
-    if (sel.storage === "ltd") {
-      price += 1929;
-      lines.push({ label: "Pevné dno úložného prostoru 18 mm", amount: 1929 });
     }
 
     return { code: cell.code, price: round(price), base: cell.price, lines, notes };
