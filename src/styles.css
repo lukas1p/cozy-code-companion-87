@@ -67,6 +67,8 @@
   --color-sage-soft: var(--sage-soft);
   --color-anthracite: var(--anthracite);
   --color-ink: var(--ink);
+  --color-select: var(--select);
+  --color-select-foreground: var(--select-foreground);
 }
 
 :root {
@@ -96,6 +98,9 @@
   --sage-soft: oklch(0.94 0.04 145);
   --anthracite: oklch(0.32 0.01 260);
   --ink: oklch(0.15 0.008 260);
+  /* #A56A45 — teplý dřevitý akcent pro aktivní volbu v konfigurátoru */
+  --select: oklch(0.58 0.092 52.1);
+  --select-foreground: oklch(0.99 0.003 90);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
