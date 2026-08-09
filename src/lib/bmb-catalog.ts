@@ -30,7 +30,8 @@ export type ParamId =
   | "length"
   | "corners"
   | "decor"
-  | "storage";
+  | "storage"
+  | "size";
 
 export type Param = {
   id: ParamId;
