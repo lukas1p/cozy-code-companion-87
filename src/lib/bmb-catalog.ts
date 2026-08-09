@@ -14,6 +14,7 @@
 import bedMarika from "@/assets/bed-marika.jpg";
 import bedAlexis from "@/assets/bed-alexis.jpg";
 import bedElla from "@/assets/bed-ella.jpg";
+import { DECOR_SWATCHES } from "./bmb-swatches";
 
 export type Selection = Record<string, string>;
 
@@ -21,6 +22,8 @@ export type Opt = {
   value: string;
   label: string;
   hint?: string;
+  /** URL skutečné textury dekoru z vzorníku BMB (pokud existuje) */
+  swatch?: string;
 };
 
 export type ParamId =
@@ -143,11 +146,25 @@ const decorsFor = (material: string): Decor[] => {
   return DECORS_DUB;
 };
 
+/**
+ * Skutečné vzorky dekorů BMB (staženo z oficiálního vzorníku na bmb.cz).
+ * Pokud pro daný dekor BMB texturu nezveřejňuje, vrací undefined —
+ * vzorek se nezobrazí, žádná textura se nevymýšlí.
+ */
+export const swatchFor = (material: string, value: string): string | undefined => {
+  if (!value) return undefined;
+  if (material === "imitace") return DECOR_SWATCHES[value];
+  const base = value.replace(/^drasany-/, "");
+  const prefix = material.startsWith("buk") ? "buk" : "dub";
+  return DECOR_SWATCHES[`${prefix}-${base}`];
+};
+
 const decorOptions = (sel: Selection): Opt[] =>
   decorsFor(sel.material ?? "imitace").map((d) => ({
     value: d.value,
     label: d.label,
     hint: d.pct ? `+${d.pct} %` : d.group,
+    swatch: swatchFor(sel.material ?? "imitace", d.value),
   }));
 
 const findDecor = (material: string, value: string) =>
