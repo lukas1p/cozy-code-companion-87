@@ -14,6 +14,7 @@
 import bedMarika from "@/assets/bed-marika.jpg";
 import bedAlexis from "@/assets/bed-alexis.jpg";
 import bedElla from "@/assets/bed-ella.jpg";
+import { DECOR_SWATCHES } from "./bmb-swatches";
 
 export type Selection = Record<string, string>;
 
@@ -21,6 +22,8 @@ export type Opt = {
   value: string;
   label: string;
   hint?: string;
+  /** URL skutečné textury dekoru z vzorníku BMB (pokud existuje) */
+  swatch?: string;
 };
 
 export type ParamId =
@@ -143,11 +146,25 @@ const decorsFor = (material: string): Decor[] => {
   return DECORS_DUB;
 };
 
+/**
+ * Skutečné vzorky dekorů BMB (staženo z oficiálního vzorníku na bmb.cz).
+ * Pokud pro daný dekor BMB texturu nezveřejňuje, vrací undefined —
+ * vzorek se nezobrazí, žádná textura se nevymýšlí.
+ */
+export const swatchFor = (material: string, value: string): string | undefined => {
+  if (!value) return undefined;
+  if (material === "imitace") return DECOR_SWATCHES[value];
+  const base = value.replace(/^drasany-/, "");
+  const prefix = material.startsWith("buk") ? "buk" : "dub";
+  return DECOR_SWATCHES[`${prefix}-${base}`];
+};
+
 const decorOptions = (sel: Selection): Opt[] =>
   decorsFor(sel.material ?? "imitace").map((d) => ({
     value: d.value,
     label: d.label,
     hint: d.pct ? `+${d.pct} %` : d.group,
+    swatch: swatchFor(sel.material ?? "imitace", d.value),
   }));
 
 const findDecor = (material: string, value: string) =>
@@ -204,33 +221,13 @@ const MARIKA_PRICES: Record<string, Record<string, { code: string; price: number
   ),
 };
 
-/**
- * Zjednodušená DEMO nabídka dekorů pro MARIKA klasik — reprezentativní výběr
- * ze skutečných dekorů BMB (přesné oficiální názvy), nikoli celý vzorník.
- */
-const MARIKA_DECORS: Record<string, Decor[]> = {
-  imitace: [
-    { value: slug("Dub Bardolino"), label: "Dub Bardolino", group: "Imitace masivního dřeva" },
-    { value: slug("Bílé"), label: "Bílé", group: "Imitace masivního dřeva" },
-    { value: slug("Kašmírově šedá"), label: "Kašmírově šedá", group: "Imitace masivního dřeva" },
-  ],
-  "buk-cink": [
-    { value: slug("Přírodní"), label: "Přírodní", group: "Přírodní dezény" },
-    { value: slug("Bílá"), label: "Bílá", group: "Barva", pct: 15, pctNote: "Bílá na masiv buk +15 %" },
-    { value: slug("Grafit"), label: "Grafit", group: "Mořeno", pct: 5, pctNote: "Buk moření +5 %" },
-  ],
-  "dub-cink": [
-    { value: slug("Natur olej"), label: "Natur olej", group: "Olej" },
-    { value: slug("Bílý olej"), label: "Bílý olej", group: "Olej", pct: 5, pctNote: "Dub bílý olej +5 %" },
-    { value: slug("Grafit olej"), label: "Grafit olej", group: "Olej" },
-  ],
-};
+const MARIKA_WIDTHS = ["90", "120", "140", "160", "180", "200"];
 
-const MARIKA_DECOR_DEFAULT: Record<string, string> = {
-  imitace: slug("Dub Bardolino"),
-  "buk-cink": slug("Přírodní"),
-  "dub-cink": slug("Natur olej"),
-};
+const MARIKA_MATERIALS: Opt[] = [
+  { value: "imitace", label: "Imitace masivu", hint: "32 mm · záruka 10 let" },
+  { value: "buk-cink", label: "Buk jádrový cink", hint: "40 mm · doživotní záruka" },
+  { value: "dub-cink", label: "Dub cink", hint: "40 mm · doživotní záruka" },
+];
 
 const MARIKA: Product = {
   id: "marika",
@@ -240,29 +237,20 @@ const MARIKA: Product = {
   sourceUrl: "https://bmb.cz/marika-klasik/",
   priceFrom: 16169,
   defaults: {
-    size: "160",
     material: "imitace",
+    width: "160",
+    length: "200",
     corners: "rovne",
-    decor: MARIKA_DECOR_DEFAULT.imitace,
+    decor: slug("Dub Bardolino"),
   },
   params: [
+    { id: "material", label: "Materiál", options: () => MARIKA_MATERIALS },
     {
-      id: "size",
-      label: "Rozměr",
-      options: () => [
-        { value: "160", label: "160 × 200" },
-        { value: "180", label: "180 × 200" },
-      ],
+      id: "width",
+      label: "Šířka lehací plochy",
+      options: () => MARIKA_WIDTHS.map((w) => ({ value: w, label: `${w} cm` })),
     },
-    {
-      id: "material",
-      label: "Materiál",
-      options: () => [
-        { value: "imitace", label: "Imitace masivu", hint: "32 mm · záruka 10 let" },
-        { value: "buk-cink", label: "Masivní buk", hint: "40 mm · doživotní záruka" },
-        { value: "dub-cink", label: "Masivní dub", hint: "40 mm · doživotní záruka" },
-      ],
-    },
+    { id: "length", label: "Délka lehací plochy", options: () => LENGTH_OPTIONS },
     {
       id: "corners",
       label: "Rohy čel",
@@ -271,25 +259,15 @@ const MARIKA: Product = {
         { value: "oble", label: "Oblé rohy" },
       ],
     },
-    {
-      id: "decor",
-      label: "Dekor / povrch",
-      options: (sel) =>
-        (MARIKA_DECORS[sel.material ?? "imitace"] ?? MARIKA_DECORS.imitace).map((d) => ({
-          value: d.value,
-          label: d.label,
-          hint: d.pct ? `+${d.pct} %` : undefined,
-        })),
-    },
+    { id: "decor", label: "Dekor / povrch", options: decorOptions },
   ],
   resolve: (sel) => {
     const key = `${sel.material}-${sel.corners}`;
-    const col = `rost-${sel.size}`;
-    const cell = MARIKA_PRICES[key]?.[col];
+    const cell = MARIKA_PRICES[key]?.[`strednice-${sel.width}`];
     const lines: PriceLine[] = [];
     const notes = [
       "Úložný prostor pod postelí je u obou variant v ceně (zdroj: bmb.cz/marika-klasik).",
-      "Zjednodušená demo konfigurace: 1. varianta konstrukce (výklopný rošt), délka 200 cm.",
+      "Ceny odpovídají 2. variantě konstrukce se střednicí dle ceníku BMB (cenik-rozmery-marika).",
     ];
     if (!cell) {
       return { lines, notes: [...notes, "Pro tuto kombinaci ceník BMB cenu neuvádí."] };
@@ -297,11 +275,23 @@ const MARIKA: Product = {
     let price = cell.price;
     lines.push({ label: "Základní cena dle ceníku", amount: cell.price });
 
-    const decor = (MARIKA_DECORS[sel.material] ?? []).find((d) => d.value === sel.decor);
+    const decor = findDecor(sel.material, sel.decor);
     if (decor?.pct) {
       const amount = round((cell.price * decor.pct) / 100);
       price += amount;
       lines.push({ label: decor.pctNote ?? `Dekor +${decor.pct} %`, amount });
+    }
+
+    if (sel.length !== "200") {
+      lines.push({ label: `Prodloužení na ${sel.length} cm`, note: "cena dle aktuálního ceníku" });
+      return {
+        code: undefined,
+        lines,
+        notes: [
+          ...notes,
+          `Pro délku ${sel.length} cm BMB u modelu MARIKA klasik veřejný příplatek ani objednací kód neuvádí — cena i kód budou doplněny podle aktuálního ceníku.`,
+        ],
+      };
     }
 
     return { code: cell.code, price: round(price), base: cell.price, lines, notes };
