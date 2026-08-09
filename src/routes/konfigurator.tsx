@@ -10,6 +10,8 @@ import {
   type Product,
   type Selection,
 } from "@/lib/bmb-catalog";
+import { DEALERS } from "@/lib/bmb-data";
+import { CzMap } from "@/components/site/cz-map";
 
 export const Route = createFileRoute("/konfigurator")({
   head: () => ({
@@ -25,22 +27,29 @@ export const Route = createFileRoute("/konfigurator")({
   component: Konfigurator,
 });
 
+const STEPS = [
+  { id: "rozmer", label: "Rozměr", params: ["size", "width", "length"] },
+  { id: "material", label: "Materiál", params: ["material"] },
+  { id: "dekor", label: "Dekor / povrch", params: ["decor"] },
+  { id: "provedeni", label: "Provedení", params: ["corners", "storage", "variant"] },
+] as const;
+
 function OptionGroup({
   label,
   value,
   onChange,
   options,
+  swatches = false,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   options: Opt[];
+  swatches?: boolean;
 }) {
   return (
     <div>
-      <div className="mb-3 flex items-baseline justify-between">
-        <div className="text-eyebrow text-muted-foreground">{label}</div>
-      </div>
+      <div className="mb-3 text-eyebrow text-muted-foreground">{label}</div>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {options.map((o) => {
           const active = o.value === value;
@@ -50,24 +59,66 @@ function OptionGroup({
               type="button"
               aria-pressed={active}
               onClick={() => onChange(o.value)}
-              className={`group relative flex flex-col items-start gap-1 rounded-2xl border px-4 py-3.5 text-left text-sm transition-all ${
+              className={`group relative flex min-h-12 items-center gap-3 rounded-2xl border px-3.5 py-3 text-left text-sm transition-all ${
                 active
-                  ? "border-foreground bg-foreground text-background"
-                  : "border-border bg-background text-foreground hover:border-foreground/40"
+                  ? "border-select bg-select text-select-foreground"
+                  : "border-border bg-background text-foreground hover:border-select/50"
               }`}
             >
-              <span className="pr-5 font-medium">{o.label}</span>
-              {o.hint && (
-                <span className={`text-[11px] ${active ? "text-background/70" : "text-muted-foreground"}`}>
-                  {o.hint}
-                </span>
-              )}
-              {active && <Check className="absolute right-3 top-3 h-3.5 w-3.5" />}
+              {swatches &&
+                (o.swatch ? (
+                  <img
+                    src={o.swatch}
+                    alt=""
+                    loading="lazy"
+                    className="h-9 w-9 shrink-0 rounded-lg object-cover"
+                  />
+                ) : (
+                  <span
+                    aria-hidden
+                    className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-dashed text-[9px] ${
+                      active ? "border-select-foreground/40 text-select-foreground/70" : "border-border text-muted-foreground"
+                    }`}
+                  >
+                    —
+                  </span>
+                ))}
+              <span className="flex min-w-0 flex-col">
+                <span className="pr-5 font-medium leading-tight">{o.label}</span>
+                {o.hint && (
+                  <span className={`text-[11px] leading-tight ${active ? "text-select-foreground/75" : "text-muted-foreground"}`}>
+                    {o.hint}
+                  </span>
+                )}
+              </span>
+              {active && <Check className="absolute right-2.5 top-2.5 h-3.5 w-3.5" />}
             </button>
           );
         })}
       </div>
     </div>
+  );
+}
+
+function StepCard({
+  index,
+  title,
+  children,
+}: {
+  index: number;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="rounded-[2rem] border border-border bg-card p-5 sm:p-8">
+      <div className="mb-6 flex items-center gap-3">
+        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-select text-[11px] font-medium text-select-foreground">
+          {index}
+        </span>
+        <h3 className="text-display truncate text-lg">{title}</h3>
+      </div>
+      <div className="space-y-6">{children}</div>
+    </section>
   );
 }
 
@@ -78,9 +129,12 @@ function Konfigurator() {
   const [productId, setProductId] = useState<string>(initialProduct.id);
   const [sel, setSel] = useState<Selection>(() => sanitize(initialProduct, initialProduct.defaults));
   const [sent, setSent] = useState(false);
+  const [pickingDealer, setPickingDealer] = useState(false);
+  const [dealerCity, setDealerCity] = useState<string | null>(null);
 
   const product = PRODUCTS[productId];
   const result = useMemo(() => product.resolve(sel), [product, sel]);
+  const dealer = DEALERS.find((d) => d.city === dealerCity) ?? null;
 
   const update = (id: string, v: string) =>
     setSel((prev) => sanitize(product, { ...prev, [id]: v }));
@@ -93,15 +147,18 @@ function Konfigurator() {
 
   const summary = product.params.map((p) => {
     const opt = p.options(sel).find((o) => o.value === sel[p.id]);
-    return { label: p.label, value: opt?.label ?? "—" };
+    return { id: p.id, label: p.label, value: opt?.label ?? "—" };
   });
+
+  const priceText = result.price ? formatPrice(result.price) : "Cena bude doplněna podle aktuálního ceníku.";
+  const codeText = result.code ?? "Bude doplněn podle aktuálního ceníku.";
 
   return (
     <div className="pt-8 pb-24">
       <div className="container-bmb">
-        <div className="flex flex-wrap items-end justify-between gap-4 pb-8">
-          <div>
-            <div className="text-eyebrow text-accent">Konfigurátor</div>
+        <div className="grid grid-cols-1 items-end gap-4 pb-8 sm:flex sm:flex-wrap sm:justify-between">
+          <div className="min-w-0">
+            <div className="text-eyebrow text-select">Konfigurátor</div>
             <h1 className="text-display mt-3 text-3xl sm:text-4xl">Postavte si svou postel</h1>
           </div>
           <div className="text-sm text-muted-foreground">
@@ -111,7 +168,7 @@ function Konfigurator() {
 
         <div className="grid gap-6 lg:grid-cols-[1.15fr_1fr]">
           {/* LEFT — VISUAL */}
-          <div className="sticky top-24 h-fit overflow-hidden rounded-[2rem] border border-border bg-oak-soft/40">
+          <div className="h-fit overflow-hidden rounded-[2rem] border border-border bg-oak-soft/40 lg:sticky lg:top-24">
             <div className="relative aspect-[4/3] w-full overflow-hidden bg-oak-soft/60">
               <img
                 key={product.id}
@@ -119,9 +176,9 @@ function Konfigurator() {
                 alt={product.name}
                 className="h-full w-full object-cover fade-in-soft"
               />
-              <div className="absolute left-6 top-6 flex flex-wrap gap-2">
-                {[result.code ?? "—", ...summary.map((s) => s.value)].map((t) => (
-                  <span key={t} className="rounded-full bg-background/85 px-3 py-1 text-[10px] font-medium tracking-[0.18em] backdrop-blur">
+              <div className="absolute left-4 top-4 right-4 flex flex-wrap gap-1.5">
+                {[result.code ?? "kód dle ceníku", ...summary.map((s) => s.value)].map((t, i) => (
+                  <span key={`${t}-${i}`} className="rounded-full bg-background/85 px-2.5 py-1 text-[10px] font-medium tracking-[0.14em] backdrop-blur">
                     {t}
                   </span>
                 ))}
@@ -131,7 +188,7 @@ function Konfigurator() {
                 najdete u prodejce nebo na {product.sourceUrl.replace("https://", "")}.
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-3 p-6">
+            <div className="grid grid-cols-3 gap-3 p-4 sm:p-6">
               {PRODUCT_LIST.map((b) => {
                 const active = b.id === productId;
                 return (
@@ -141,13 +198,13 @@ function Konfigurator() {
                     aria-pressed={active}
                     onClick={() => switchProduct(b.id)}
                     className={`group overflow-hidden rounded-2xl border transition-all ${
-                      active ? "border-foreground" : "border-border hover:border-foreground/30"
+                      active ? "border-select ring-1 ring-select" : "border-border hover:border-select/40"
                     }`}
                   >
                     <div className="aspect-[4/3] overflow-hidden bg-oak-soft/60">
                       <img src={b.image} alt={b.name} loading="lazy" className="h-full w-full object-cover" />
                     </div>
-                    <div className="p-3 text-left">
+                    <div className="p-2 text-left sm:p-3">
                       <div className="text-[11px] font-medium">{b.name}</div>
                       <div className="text-[10px] text-muted-foreground">{b.tagline}</div>
                     </div>
@@ -158,12 +215,12 @@ function Konfigurator() {
           </div>
 
           {/* RIGHT — CONFIG */}
-          <div className="flex flex-col gap-6">
-            <div className="rounded-[2rem] border border-border bg-card p-8">
-              <div className="flex items-start justify-between gap-4">
-                <div>
+          <div className="flex min-w-0 flex-col gap-4">
+            <div className="rounded-[2rem] border border-border bg-card p-5 sm:p-8">
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
+                <div className="min-w-0">
                   <div className="text-eyebrow text-muted-foreground">{product.tagline}</div>
-                  <h2 className="text-display mt-2 text-4xl">{product.name}</h2>
+                  <h2 className="text-display mt-2 truncate text-3xl sm:text-4xl">{product.name}</h2>
                   <div className="mt-2 text-xs tracking-[0.2em] text-muted-foreground">
                     OBJ. Č. · <span className="text-foreground">{result.code ?? "—"}</span>
                   </div>
@@ -172,31 +229,53 @@ function Konfigurator() {
                   <div className="text-eyebrow text-muted-foreground">Cena s DPH</div>
                   <div
                     key={result.price ?? "na"}
-                    className="text-display mt-1 text-3xl text-foreground fade-in-soft"
+                    className="text-display mt-1 text-2xl text-foreground fade-in-soft sm:text-3xl"
                   >
                     {result.price ? formatPrice(result.price) : "na dotaz"}
                   </div>
                 </div>
               </div>
-
-              <div className="mt-8 space-y-6">
-                {product.params.map((p) => (
-                  <OptionGroup
-                    key={`${product.id}-${p.id}`}
-                    label={p.label}
-                    value={sel[p.id] ?? ""}
-                    onChange={(v) => update(p.id, v)}
-                    options={p.options(sel)}
-                  />
+              <ol className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-[11px] text-muted-foreground">
+                {STEPS.map((s, i) => (
+                  <li key={s.id} className="flex items-center gap-1.5">
+                    <span className="grid h-4 w-4 place-items-center rounded-full bg-select/15 text-[9px] text-select">{i + 1}</span>
+                    {s.label}
+                  </li>
                 ))}
-              </div>
+                <li className="flex items-center gap-1.5">
+                  <span className="grid h-4 w-4 place-items-center rounded-full bg-select/15 text-[9px] text-select">5</span>
+                  Výsledek
+                </li>
+              </ol>
             </div>
 
-            {/* RESULT */}
-            <div className="rounded-[2rem] border border-border bg-ink p-8 text-background">
-              <div className="text-eyebrow text-accent">Výsledek konfigurace</div>
-              <div className="mt-4 grid gap-6 sm:grid-cols-2">
-                <div>
+            {STEPS.map((step, i) => {
+              const params = product.params.filter((p) => (step.params as readonly string[]).includes(p.id));
+              if (params.length === 0) return null;
+              return (
+                <StepCard key={step.id} index={i + 1} title={step.label}>
+                  {params.map((p) => (
+                    <OptionGroup
+                      key={`${product.id}-${p.id}`}
+                      label={p.label}
+                      value={sel[p.id] ?? ""}
+                      onChange={(v) => update(p.id, v)}
+                      options={p.options(sel)}
+                      swatches={p.id === "decor"}
+                    />
+                  ))}
+                </StepCard>
+              );
+            })}
+
+            {/* STEP 5 — RESULT */}
+            <div className="rounded-[2rem] border border-border bg-ink p-5 text-background sm:p-8">
+              <div className="flex items-center gap-3">
+                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-select text-[11px] font-medium text-select-foreground">5</span>
+                <div className="text-eyebrow text-select">Výsledek konfigurace</div>
+              </div>
+              <div className="mt-6 grid gap-6 sm:grid-cols-2">
+                <div className="min-w-0">
                   <div className="text-display text-2xl">{product.name}</div>
                   <ul className="mt-4 space-y-2 text-xs text-background/70">
                     {summary.map((s, i) => (
@@ -210,37 +289,38 @@ function Konfigurator() {
                     ))}
                   </ul>
                 </div>
-                <div className="flex flex-col justify-between gap-6">
+                <div className="flex min-w-0 flex-col justify-between gap-6">
                   <div>
                     <div className="text-eyebrow text-background/60">Objednací kód</div>
-                    <div className="mt-1 font-mono text-sm">{result.code ?? "—"}</div>
+                    <div className="mt-1 font-mono text-sm break-words">{codeText}</div>
                     <div className="text-eyebrow mt-6 text-background/60">Rozpis ceny</div>
                     <ul className="mt-2 space-y-1 text-xs text-background/70">
                       {result.lines.map((l) => (
                         <li key={l.label} className="flex justify-between gap-4">
                           <span>{l.label}</span>
-                          <span className="text-background">
+                          <span className="text-right text-background">
                             {l.amount != null ? formatPrice(l.amount) : l.note}
                           </span>
                         </li>
                       ))}
                     </ul>
-                    <div className="text-display mt-4 text-3xl">
-                      {result.price ? formatPrice(result.price) : "Cena na dotaz"}
+                    <div className={`mt-4 ${result.price ? "text-display text-3xl" : "text-sm text-background/80"}`}>
+                      {priceText}
                     </div>
                   </div>
                   <div className="flex flex-col gap-2">
-                    <Link
-                      to="/prodejci"
-                      className="group inline-flex items-center justify-between rounded-full bg-background px-5 py-3 text-xs font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                    <button
+                      type="button"
+                      onClick={() => setPickingDealer(true)}
+                      className="group inline-flex items-center justify-between gap-3 rounded-full bg-select px-5 py-3 text-xs font-medium text-select-foreground transition-opacity hover:opacity-90"
                     >
                       <span className="inline-flex items-center gap-2"><MapPin className="h-3.5 w-3.5" />Vybrat nejbližšího prodejce</span>
                       <ArrowUpRight className="h-3.5 w-3.5" />
-                    </Link>
+                    </button>
                     <button
                       type="button"
                       onClick={() => setSent(true)}
-                      className="group inline-flex items-center justify-between rounded-full border border-background/20 px-5 py-3 text-xs font-medium text-background transition-colors hover:border-background/60"
+                      className="group inline-flex items-center justify-between gap-3 rounded-full border border-background/20 px-5 py-3 text-xs font-medium text-background transition-colors hover:border-background/60"
                     >
                       <span className="inline-flex items-center gap-2"><Mail className="h-3.5 w-3.5" />{sent ? "Odesláno — brzy se ozveme" : "Odeslat konfiguraci e-mailem"}</span>
                       <ArrowUpRight className="h-3.5 w-3.5" />
@@ -255,6 +335,85 @@ function Konfigurator() {
                 <li>· Konfigurátor slouží jako podklad pro objednávku u prodejce. Přímý nákup online neposkytujeme.</li>
               </ul>
             </div>
+
+            {/* DEALER PICKER */}
+            {pickingDealer && (
+              <div className="rounded-[2rem] border border-border bg-card p-5 sm:p-8">
+                <div className="text-eyebrow text-select">Výběr prodejce</div>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Vyberte bod na mapě nebo prodejce ze seznamu. Vaše konfigurace zůstane zachovaná.
+                </p>
+                <div className="mt-5 grid gap-5 lg:grid-cols-2">
+                  <div className="overflow-hidden rounded-2xl border border-border bg-oak-soft/30 p-3">
+                    <CzMap active={dealerCity} onSelect={setDealerCity} showLabels={false} />
+                  </div>
+                  <div className="max-h-64 overflow-auto rounded-2xl border border-border">
+                    {DEALERS.map((d) => (
+                      <button
+                        key={d.city}
+                        type="button"
+                        onClick={() => setDealerCity(d.city)}
+                        className={`flex w-full items-center justify-between gap-3 border-b border-border/70 px-4 py-3 text-left text-sm transition-colors last:border-0 hover:bg-muted ${
+                          d.city === dealerCity ? "bg-select/10" : ""
+                        }`}
+                      >
+                        <span className="min-w-0">
+                          <span className="block truncate font-medium">{d.city}</span>
+                          <span className="block truncate text-xs text-muted-foreground">{d.name}</span>
+                        </span>
+                        <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {dealer && (
+                  <div className="mt-6 grid gap-5 rounded-2xl border border-select/40 bg-select/5 p-5 sm:grid-cols-2">
+                    <div className="min-w-0">
+                      <div className="text-eyebrow text-select">Moje konfigurace</div>
+                      <div className="text-display mt-2 text-xl">{product.name}</div>
+                      <ul className="mt-3 space-y-1.5 text-xs">
+                        {summary.map((s) => (
+                          <li key={s.label} className="flex justify-between gap-3">
+                            <span className="text-muted-foreground">{s.label}</span>
+                            <span className="text-right font-medium">{s.value}</span>
+                          </li>
+                        ))}
+                        <li className="flex justify-between gap-3 border-t border-border pt-1.5">
+                          <span className="text-muted-foreground">Cena</span>
+                          <span className="text-right font-medium">{priceText}</span>
+                        </li>
+                        <li className="flex justify-between gap-3">
+                          <span className="text-muted-foreground">Objednací kód</span>
+                          <span className="text-right font-mono">{codeText}</span>
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-eyebrow text-select">Prodejce</div>
+                      <div className="text-display mt-2 text-xl">{dealer.name}</div>
+                      <div className="mt-3 space-y-2 text-sm">
+                        <div className="flex items-start gap-2 text-muted-foreground">
+                          <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {dealer.address}
+                        </div>
+                        <a href={`tel:${dealer.phone}`} className="block hover:underline">{dealer.phone}</a>
+                        <a href={`mailto:${dealer.email}`} className="block break-all hover:underline">{dealer.email}</a>
+                      </div>
+                      <div className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
+                        Konfiguraci předáte prodejci osobně nebo e-mailem — objednávka se z webu neodesílá.
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <Link
+                  to="/prodejci"
+                  className="mt-5 inline-flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground"
+                >
+                  Zobrazit všechny prodejce <ArrowUpRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
