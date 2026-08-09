@@ -205,6 +205,7 @@ const MARIKA_PRICES: Record<string, Record<string, { code: string; price: number
 };
 
 const MARIKA: Product = {
+  /* eslint-disable-next-line */
   id: "marika",
   name: "MARIKA klasik",
   tagline: "Naše nejprodávanější postel",
