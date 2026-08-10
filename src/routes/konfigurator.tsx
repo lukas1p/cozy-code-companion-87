@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowUpRight, Check, Mail, MapPin } from "lucide-react";
+import { ArrowUpRight, Check, Mail, MapPin, X } from "lucide-react";
 import {
   PRODUCTS,
   PRODUCT_LIST,
@@ -128,6 +128,9 @@ function Konfigurator() {
 
   const [productId, setProductId] = useState<string>(initialProduct.id);
   const [sel, setSel] = useState<Selection>(() => sanitize(initialProduct, initialProduct.defaults));
+  const [emailOpen, setEmailOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const [pickingDealer, setPickingDealer] = useState(false);
   const [dealerCity, setDealerCity] = useState<string | null>(null);
@@ -152,6 +155,25 @@ function Konfigurator() {
 
   const priceText = result.price ? formatPrice(result.price) : "Cena bude doplněna podle aktuálního ceníku.";
   const codeText = result.code ?? "Bude doplněn podle aktuálního ceníku.";
+
+  const configTitle = `Konfigurace postele ${product.name} — ${summary.map((s) => s.value).join(" · ")}`;
+  const configLines = [
+    `Model: ${product.name}`,
+    `Objednací kód: ${codeText}`,
+    ...summary.map((s) => `${s.label}: ${s.value}`),
+    `Cena s DPH: ${priceText}`,
+  ];
+
+  const submitEmail = (e: React.FormEvent) => {
+    e.preventDefault();
+    const value = email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value) || value.length > 255) {
+      setEmailError("Zadejte prosím platnou e-mailovou adresu.");
+      return;
+    }
+    setEmailError(null);
+    setSent(true);
+  };
 
   return (
     <div className="pt-8 pb-24">
