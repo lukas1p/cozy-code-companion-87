@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowUpRight, Check, Mail, MapPin } from "lucide-react";
+import { ArrowUpRight, Check, Mail, MapPin, X } from "lucide-react";
 import {
   PRODUCTS,
   PRODUCT_LIST,
@@ -128,6 +128,9 @@ function Konfigurator() {
 
   const [productId, setProductId] = useState<string>(initialProduct.id);
   const [sel, setSel] = useState<Selection>(() => sanitize(initialProduct, initialProduct.defaults));
+  const [emailOpen, setEmailOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const [pickingDealer, setPickingDealer] = useState(false);
   const [dealerCity, setDealerCity] = useState<string | null>(null);
@@ -152,6 +155,25 @@ function Konfigurator() {
 
   const priceText = result.price ? formatPrice(result.price) : "Cena bude doplněna podle aktuálního ceníku.";
   const codeText = result.code ?? "Bude doplněn podle aktuálního ceníku.";
+
+  const configTitle = `Konfigurace postele ${product.name} — ${summary.map((s) => s.value).join(" · ")}`;
+  const configLines = [
+    `Model: ${product.name}`,
+    `Objednací kód: ${codeText}`,
+    ...summary.map((s) => `${s.label}: ${s.value}`),
+    `Cena s DPH: ${priceText}`,
+  ];
+
+  const submitEmail = (e: React.FormEvent) => {
+    e.preventDefault();
+    const value = email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value) || value.length > 255) {
+      setEmailError("Zadejte prosím platnou e-mailovou adresu.");
+      return;
+    }
+    setEmailError(null);
+    setSent(true);
+  };
 
   return (
     <div className="pt-8 pb-24">
@@ -319,10 +341,14 @@ function Konfigurator() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setSent(true)}
+                      onClick={() => {
+                        setSent(false);
+                        setEmailError(null);
+                        setEmailOpen(true);
+                      }}
                       className="group inline-flex items-center justify-between gap-3 rounded-full border border-background/20 px-5 py-3 text-sm font-medium text-background transition-colors hover:border-background/60"
                     >
-                      <span className="inline-flex items-center gap-2"><Mail className="h-3.5 w-3.5" />{sent ? "Odesláno — brzy se ozveme" : "Odeslat konfiguraci e-mailem"}</span>
+                      <span className="inline-flex items-center gap-2"><Mail className="h-3.5 w-3.5" />{sent ? "Konfigurace odeslána" : "Odeslat konfiguraci e-mailem"}</span>
                       <ArrowUpRight className="h-3.5 w-3.5" />
                     </button>
                   </div>
@@ -417,6 +443,101 @@ function Konfigurator() {
           </div>
         </div>
       </div>
+
+      {emailOpen && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-ink/50 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Odeslat konfiguraci e-mailem"
+          onClick={() => setEmailOpen(false)}
+        >
+          <div
+            className="relative w-full max-w-lg rounded-[2rem] border border-border bg-card p-6 sm:p-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              aria-label="Zavřít"
+              onClick={() => setEmailOpen(false)}
+              className="absolute right-5 top-5 rounded-full border border-border p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <div className="text-eyebrow text-select">Konfigurátor</div>
+            <h3 className="text-display mt-2 pr-10 text-2xl">Odeslat konfiguraci e-mailem</h3>
+
+            {sent ? (
+              <div className="mt-5">
+                <p className="text-base text-muted-foreground">
+                  Konfigurace byla úspěšně odeslána na <span className="text-foreground">{email}</span>.
+                </p>
+                <div className="mt-5 rounded-2xl border border-border bg-muted/40 p-4 text-sm">
+                  <div className="font-medium">{configTitle}</div>
+                  <ul className="mt-3 space-y-1 text-muted-foreground">
+                    {configLines.map((l) => (
+                      <li key={l}>· {l}</li>
+                    ))}
+                  </ul>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setEmailOpen(false)}
+                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-select px-5 py-3 text-sm font-medium text-select-foreground transition-opacity hover:opacity-90"
+                >
+                  Zavřít <ArrowUpRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={submitEmail} className="mt-4">
+                <p className="text-base text-muted-foreground">
+                  Kompletní konfigurace včetně objednacího kódu a ceny bude odeslána na zadaný e-mail.
+                </p>
+                <div className="mt-5 rounded-2xl border border-border bg-muted/40 p-4 text-sm">
+                  <div className="font-medium">{configTitle}</div>
+                  <ul className="mt-3 space-y-1 text-muted-foreground">
+                    {configLines.map((l) => (
+                      <li key={l}>· {l}</li>
+                    ))}
+                  </ul>
+                </div>
+                <label htmlFor="config-email" className="text-eyebrow mt-6 block text-muted-foreground">
+                  Váš e-mail
+                </label>
+                <input
+                  id="config-email"
+                  type="email"
+                  required
+                  maxLength={255}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="jmeno@email.cz"
+                  className="mt-2 w-full rounded-2xl border border-border bg-background px-4 py-3 text-base outline-none focus:border-select"
+                />
+                {emailError && <div className="mt-2 text-sm text-destructive">{emailError}</div>}
+                <div className="mt-5 flex flex-wrap gap-2">
+                  <button
+                    type="submit"
+                    className="inline-flex items-center gap-2 rounded-full bg-select px-5 py-3 text-sm font-medium text-select-foreground transition-opacity hover:opacity-90"
+                  >
+                    <Mail className="h-3.5 w-3.5" /> Odeslat konfiguraci
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEmailOpen(false)}
+                    className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    Zrušit
+                  </button>
+                </div>
+                <p className="mt-4 text-[13px] leading-relaxed text-muted-foreground">
+                  Prototyp: konfigurace se připraví k odeslání, skutečné doručení e-mailu vyžaduje napojení e-mailové služby.
+                </p>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
