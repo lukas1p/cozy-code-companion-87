@@ -341,10 +341,14 @@ function Konfigurator() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setSent(true)}
+                      onClick={() => {
+                        setSent(false);
+                        setEmailError(null);
+                        setEmailOpen(true);
+                      }}
                       className="group inline-flex items-center justify-between gap-3 rounded-full border border-background/20 px-5 py-3 text-sm font-medium text-background transition-colors hover:border-background/60"
                     >
-                      <span className="inline-flex items-center gap-2"><Mail className="h-3.5 w-3.5" />{sent ? "Odesláno — brzy se ozveme" : "Odeslat konfiguraci e-mailem"}</span>
+                      <span className="inline-flex items-center gap-2"><Mail className="h-3.5 w-3.5" />{sent ? "Konfigurace odeslána" : "Odeslat konfiguraci e-mailem"}</span>
                       <ArrowUpRight className="h-3.5 w-3.5" />
                     </button>
                   </div>
