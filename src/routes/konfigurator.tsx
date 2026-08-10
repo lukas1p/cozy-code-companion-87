@@ -59,7 +59,7 @@ function OptionGroup({
               type="button"
               aria-pressed={active}
               onClick={() => onChange(o.value)}
-              className={`group relative flex min-h-12 items-center gap-3 rounded-2xl border px-3.5 py-3 text-left text-sm transition-all ${
+              className={`group relative flex min-h-12 items-center gap-3 rounded-2xl border px-3.5 py-3 text-left text-base transition-all ${
                 active
                   ? "border-select bg-select text-select-foreground"
                   : "border-border bg-background text-foreground hover:border-select/50"
@@ -76,7 +76,7 @@ function OptionGroup({
                 ) : (
                   <span
                     aria-hidden
-                    className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-dashed text-[9px] ${
+                    className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-dashed text-[11px] ${
                       active ? "border-select-foreground/40 text-select-foreground/70" : "border-border text-muted-foreground"
                     }`}
                   >
@@ -86,7 +86,7 @@ function OptionGroup({
               <span className="flex min-w-0 flex-col">
                 <span className="pr-5 font-medium leading-tight">{o.label}</span>
                 {o.hint && (
-                  <span className={`text-[11px] leading-tight ${active ? "text-select-foreground/75" : "text-muted-foreground"}`}>
+                  <span className={`text-[13px] leading-tight ${active ? "text-select-foreground/75" : "text-muted-foreground"}`}>
                     {o.hint}
                   </span>
                 )}
@@ -112,7 +112,7 @@ function StepCard({
   return (
     <section className="rounded-[2rem] border border-border bg-card p-5 sm:p-8">
       <div className="mb-6 flex items-center gap-3">
-        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-select text-[11px] font-medium text-select-foreground">
+        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-select text-[13px] font-medium text-select-foreground">
           {index}
         </span>
         <h3 className="text-display truncate text-lg">{title}</h3>
@@ -161,7 +161,7 @@ function Konfigurator() {
             <div className="text-eyebrow text-select">Konfigurátor</div>
             <h1 className="text-display mt-3 text-3xl sm:text-4xl">Postavte si svou postel</h1>
           </div>
-          <div className="text-sm text-muted-foreground">
+          <div className="text-base text-muted-foreground">
             Ceny a objednací kódy dle oficiálního ceníku BMB · platnost od 1. 4. 2026
           </div>
         </div>
@@ -178,12 +178,12 @@ function Konfigurator() {
               />
               <div className="absolute left-4 top-4 right-4 flex flex-wrap gap-1.5">
                 {[result.code ?? "kód dle ceníku", ...summary.map((s) => s.value)].map((t, i) => (
-                  <span key={`${t}-${i}`} className="rounded-full bg-background/85 px-2.5 py-1 text-[10px] font-medium tracking-[0.14em] backdrop-blur">
+                  <span key={`${t}-${i}`} className="rounded-full bg-background/85 px-2.5 py-1 text-xs font-medium tracking-[0.14em] backdrop-blur">
                     {t}
                   </span>
                 ))}
               </div>
-              <div className="absolute bottom-4 left-6 right-6 text-[10px] leading-relaxed text-foreground/60">
+              <div className="absolute bottom-4 left-6 right-6 text-xs leading-relaxed text-foreground/60">
                 Fotografie zobrazuje model, nikoli konkrétní dekor — vzorník dekorů
                 najdete u prodejce nebo na {product.sourceUrl.replace("https://", "")}.
               </div>
@@ -205,8 +205,8 @@ function Konfigurator() {
                       <img src={b.image} alt={b.name} loading="lazy" className="h-full w-full object-cover" />
                     </div>
                     <div className="p-2 text-left sm:p-3">
-                      <div className="text-[11px] font-medium">{b.name}</div>
-                      <div className="text-[10px] text-muted-foreground">{b.tagline}</div>
+                      <div className="text-[13px] font-medium">{b.name}</div>
+                      <div className="text-xs text-muted-foreground">{b.tagline}</div>
                     </div>
                   </button>
                 );
@@ -221,7 +221,7 @@ function Konfigurator() {
                 <div className="min-w-0">
                   <div className="text-eyebrow text-muted-foreground">{product.tagline}</div>
                   <h2 className="text-display mt-2 truncate text-3xl sm:text-4xl">{product.name}</h2>
-                  <div className="mt-2 text-xs tracking-[0.2em] text-muted-foreground">
+                  <div className="mt-2 text-sm tracking-[0.2em] text-muted-foreground">
                     OBJ. Č. · <span className="text-foreground">{result.code ?? "—"}</span>
                   </div>
                 </div>
@@ -235,15 +235,15 @@ function Konfigurator() {
                   </div>
                 </div>
               </div>
-              <ol className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-[11px] text-muted-foreground">
+              <ol className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-[13px] text-muted-foreground">
                 {STEPS.map((s, i) => (
                   <li key={s.id} className="flex items-center gap-1.5">
-                    <span className="grid h-4 w-4 place-items-center rounded-full bg-select/15 text-[9px] text-select">{i + 1}</span>
+                    <span className="grid h-4 w-4 place-items-center rounded-full bg-select/15 text-[11px] text-select">{i + 1}</span>
                     {s.label}
                   </li>
                 ))}
                 <li className="flex items-center gap-1.5">
-                  <span className="grid h-4 w-4 place-items-center rounded-full bg-select/15 text-[9px] text-select">5</span>
+                  <span className="grid h-4 w-4 place-items-center rounded-full bg-select/15 text-[11px] text-select">5</span>
                   Výsledek
                 </li>
               </ol>
@@ -271,13 +271,13 @@ function Konfigurator() {
             {/* STEP 5 — RESULT */}
             <div className="rounded-[2rem] border border-border bg-ink p-5 text-background sm:p-8">
               <div className="flex items-center gap-3">
-                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-select text-[11px] font-medium text-select-foreground">5</span>
+                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-select text-[13px] font-medium text-select-foreground">5</span>
                 <div className="text-eyebrow text-select">Výsledek konfigurace</div>
               </div>
               <div className="mt-6 grid gap-6 sm:grid-cols-2">
                 <div className="min-w-0">
                   <div className="text-display text-2xl">{product.name}</div>
-                  <ul className="mt-4 space-y-2 text-xs text-background/70">
+                  <ul className="mt-4 space-y-2 text-sm text-background/70">
                     {summary.map((s, i) => (
                       <li
                         key={s.label}
@@ -292,9 +292,9 @@ function Konfigurator() {
                 <div className="flex min-w-0 flex-col justify-between gap-6">
                   <div>
                     <div className="text-eyebrow text-background/60">Objednací kód</div>
-                    <div className="mt-1 font-mono text-sm break-words">{codeText}</div>
+                    <div className="mt-1 font-mono text-base break-words">{codeText}</div>
                     <div className="text-eyebrow mt-6 text-background/60">Rozpis ceny</div>
-                    <ul className="mt-2 space-y-1 text-xs text-background/70">
+                    <ul className="mt-2 space-y-1 text-sm text-background/70">
                       {result.lines.map((l) => (
                         <li key={l.label} className="flex justify-between gap-4">
                           <span>{l.label}</span>
@@ -304,7 +304,7 @@ function Konfigurator() {
                         </li>
                       ))}
                     </ul>
-                    <div className={`mt-4 ${result.price ? "text-display text-3xl" : "text-sm text-background/80"}`}>
+                    <div className={`mt-4 ${result.price ? "text-display text-3xl" : "text-base text-background/80"}`}>
                       {priceText}
                     </div>
                   </div>
@@ -312,7 +312,7 @@ function Konfigurator() {
                     <button
                       type="button"
                       onClick={() => setPickingDealer(true)}
-                      className="group inline-flex items-center justify-between gap-3 rounded-full bg-select px-5 py-3 text-xs font-medium text-select-foreground transition-opacity hover:opacity-90"
+                      className="group inline-flex items-center justify-between gap-3 rounded-full bg-select px-5 py-3 text-sm font-medium text-select-foreground transition-opacity hover:opacity-90"
                     >
                       <span className="inline-flex items-center gap-2"><MapPin className="h-3.5 w-3.5" />Vybrat nejbližšího prodejce</span>
                       <ArrowUpRight className="h-3.5 w-3.5" />
@@ -320,7 +320,7 @@ function Konfigurator() {
                     <button
                       type="button"
                       onClick={() => setSent(true)}
-                      className="group inline-flex items-center justify-between gap-3 rounded-full border border-background/20 px-5 py-3 text-xs font-medium text-background transition-colors hover:border-background/60"
+                      className="group inline-flex items-center justify-between gap-3 rounded-full border border-background/20 px-5 py-3 text-sm font-medium text-background transition-colors hover:border-background/60"
                     >
                       <span className="inline-flex items-center gap-2"><Mail className="h-3.5 w-3.5" />{sent ? "Odesláno — brzy se ozveme" : "Odeslat konfiguraci e-mailem"}</span>
                       <ArrowUpRight className="h-3.5 w-3.5" />
@@ -328,7 +328,7 @@ function Konfigurator() {
                   </div>
                 </div>
               </div>
-              <ul className="mt-6 space-y-1 text-[11px] leading-relaxed text-background/50">
+              <ul className="mt-6 space-y-1 text-[13px] leading-relaxed text-background/50">
                 {result.notes.map((n) => (
                   <li key={n}>· {n}</li>
                 ))}
@@ -340,26 +340,26 @@ function Konfigurator() {
             {pickingDealer && (
               <div className="rounded-[2rem] border border-border bg-card p-5 sm:p-8">
                 <div className="text-eyebrow text-select">Výběr prodejce</div>
-                <p className="mt-2 text-sm text-muted-foreground">
+                <p className="mt-2 text-base text-muted-foreground">
                   Vyberte bod na mapě nebo prodejce ze seznamu. Vaše konfigurace zůstane zachovaná.
                 </p>
                 <div className="mt-5 grid gap-5 lg:grid-cols-2">
                   <div className="overflow-hidden rounded-2xl border border-border bg-oak-soft/30 p-3">
                     <CzMap active={dealerCity} onSelect={setDealerCity} showLabels={false} />
                   </div>
-                  <div className="max-h-64 overflow-auto rounded-2xl border border-border">
+                  <div className="rounded-2xl border border-border">
                     {DEALERS.map((d) => (
                       <button
                         key={d.city}
                         type="button"
                         onClick={() => setDealerCity(d.city)}
-                        className={`flex w-full items-center justify-between gap-3 border-b border-border/70 px-4 py-3 text-left text-sm transition-colors last:border-0 hover:bg-muted ${
+                        className={`flex w-full items-center justify-between gap-3 border-b border-border/70 px-4 py-3 text-left text-base transition-colors last:border-0 hover:bg-muted ${
                           d.city === dealerCity ? "bg-select/10" : ""
                         }`}
                       >
                         <span className="min-w-0">
                           <span className="block truncate font-medium">{d.city}</span>
-                          <span className="block truncate text-xs text-muted-foreground">{d.name}</span>
+                          <span className="block truncate text-sm text-muted-foreground">{d.name}</span>
                         </span>
                         <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground" />
                       </button>
@@ -372,7 +372,7 @@ function Konfigurator() {
                     <div className="min-w-0">
                       <div className="text-eyebrow text-select">Moje konfigurace</div>
                       <div className="text-display mt-2 text-xl">{product.name}</div>
-                      <ul className="mt-3 space-y-1.5 text-xs">
+                      <ul className="mt-3 space-y-1.5 text-sm">
                         {summary.map((s) => (
                           <li key={s.label} className="flex justify-between gap-3">
                             <span className="text-muted-foreground">{s.label}</span>
@@ -392,14 +392,14 @@ function Konfigurator() {
                     <div className="min-w-0">
                       <div className="text-eyebrow text-select">Prodejce</div>
                       <div className="text-display mt-2 text-xl">{dealer.name}</div>
-                      <div className="mt-3 space-y-2 text-sm">
+                      <div className="mt-3 space-y-2 text-base">
                         <div className="flex items-start gap-2 text-muted-foreground">
                           <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {dealer.address}
                         </div>
                         <a href={`tel:${dealer.phone}`} className="block hover:underline">{dealer.phone}</a>
                         <a href={`mailto:${dealer.email}`} className="block break-all hover:underline">{dealer.email}</a>
                       </div>
-                      <div className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
+                      <div className="mt-4 text-[13px] leading-relaxed text-muted-foreground">
                         Konfiguraci předáte prodejci osobně nebo e-mailem — objednávka se z webu neodesílá.
                       </div>
                     </div>
@@ -408,7 +408,7 @@ function Konfigurator() {
 
                 <Link
                   to="/prodejci"
-                  className="mt-5 inline-flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground"
+                  className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground"
                 >
                   Zobrazit všechny prodejce <ArrowUpRight className="h-3.5 w-3.5" />
                 </Link>
